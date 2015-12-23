@@ -1,0 +1,23 @@
+{% extends 'layout.html' %}
+{% block content %}
+<div class="container-fluid">
+    <ul class="list-group">
+        {% for file in files %}
+        <li class="list-group-item">
+            <p><a href="/view/{{ file.id }}">{{ file.name }}</a> загружен {{ file.uploaded|date('y-m-d h:i') }}</p>
+            <p><strong>Комментарий пользователя:</strong>   {{ file.comment }}</p>
+            <p><strong>Размер файла:</strong>  {{ helper.formatSize(file.size) }}</p>
+            <p>Загрузил <strong>{{ file.getUploadedBy.getLogin }}</strong></p>
+            <form action="/view/{{file.id}}" method="post">
+                <input type="hidden" name="_METHOD" value="DELETE"/>
+                <input type="submit" value="Remove file"/>
+            </form>
+        </li>
+
+        {% else %}
+        <p>There are currently no files.</p>
+
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

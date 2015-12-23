@@ -47,4 +47,16 @@ class FileHelper
         }
         return $fileResource;
     }
+
+    public function fileDelete($id) {
+        $file = $this->em->getRepository('Uppu4\Entity\File')->findOneById($id);
+        $filePath = \Uppu4\Helper\FormatHelper::formatUploadLink($file->getId(), $file->getName());
+        if (in_array($file->getExtension(), $this->pictures)) {
+            $fileResizePath = \Uppu4\Helper\FormatHelper::formatUploadResizeLink($file->getId(), $file->getName());
+            unlink($fileResizePath);
+        }
+        unlink($filePath);
+        $this->em->remove($file);
+        $this->em->flush();
+    }
 }

@@ -43,8 +43,9 @@ class LoginHelper
         return true;
     }
 
-    public function authenticateUser(\Uppu4\Entity\User $user) {
-        $this->responseCookies->set('token', $user->getToken(), time() + 3600 * 24 * 7);
-        $this->responseCookies->set('hash', $user->getHash(), time() + 3600 * 24 * 7);
+    public function authenticateUser($login, $password) {
+        if ($user = $this->userRepository->findOneByLogin($login)) {
+
+        }
     }
 }
