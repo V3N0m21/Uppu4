@@ -15,9 +15,7 @@ $app->container->singleton('em', function () use ($entityManager) {
 $app->container->singleton('userHelper', function () use ($app) {
    return new UserHelper($app->em, $app->request->cookies, $app->response->cookies);
 });
-//$app->container->singleton('loginHelper', function () use ($app) {
-//   return new LoginHelper($app->em->getRepository('Uppu4\Entity\User'), $app->request->cookies, $app->response->cookies);
-//});
+
 
 
 $app->view->appendData(array(
