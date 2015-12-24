@@ -4,7 +4,7 @@
 
     <div class="comment" id="comment{{comment.id}}"
          {% if userHelper.checkAuthorization() == true %}
-         onclick="appendPostForm({{comment.id}}, '{{comment.user}}')"
+         onclick="appendPostForm({{comment.id}}, '{{comment.user.getLogin}}')"
          {% endif %}
          style="margin-left:{{ (comment.level -1) * 25 }}px;">
         <ul style="list-style:none;">
