@@ -5,6 +5,7 @@ use Uppu4\Helper\LoginHelper;
 use Uppu4\Helper\UserHelper;
 use Uppu4\Helper\FileHelper;
 use Uppu4\Helper\FormatHelper;
+use Uppu4\Helper\CommentHelper;
 
 $app = new \Slim\Slim(array('view' => new \Slim\Views\Twig(), 'templates.path' => '../app/templates'));
 
@@ -146,13 +147,14 @@ $app->map('/ajaxComments/:id', function ($id) use ($app) {
         $file = $app->em->find('Uppu4\Entity\File', $id);
         $user = $app->em->find('Uppu4\Entity\User', $app->request->params('userId'));
         $validation = new \Uppu4\Helper\DataValidator;
-        $commentHelper = new CommentHelper($_POST, $app->em, $parent, $file, $user);
+        $commentHelper = new CommentHelper($app->em);
+        $commentHelper->createComment($app->request->params('comment'), $parent, $file, $user);
         $comment = $commentHelper->comment;
         $validation->validateComment($comment);
-        if (!$validation->hasErrors()) {
+        if (empty($validation->errors)) {
             $commentHelper->commentSave();
         };
-        $comments = $app->em->getRepository('Uppu3\Entity\Comment')->findBy(array('fileId' => $id), array('path' => 'ASC'));
+        $comments = $app->em->getRepository('Uppu4\Entity\Comment')->findBy(array('fileId' => $id), array('path' => 'ASC'));
         $app->render('comments.html', array('comments' => $comments));
     }
 })->via('GET', 'POST');

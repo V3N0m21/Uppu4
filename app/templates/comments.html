@@ -1,0 +1,37 @@
+<div class="comments" id="comments">
+    {% for comment in comments %}
+
+
+    <div class="comment" id="comment{{comment.id}}"
+         {% if userHelper.checkAuthorization() == true %}
+         onclick="appendPostForm({{comment.id}}, '{{comment.user}}')"
+         {% endif %}
+         style="margin-left:{{ (comment.level -1) * 25 }}px;">
+        <ul style="list-style:none;">
+            <li>
+                <p>{{ comment.posted|date('d-m-y H:i')  }}</p>
+                <p><i>{{ comment.user.getLogin }} написал:</i></p>
+                <p>> {{ comment.comment }}</p>
+                <p><span>ответить</span></p>
+            </li>
+
+        </ul>
+
+        {# {% if  %} #}
+        {# <div style="border: 1px solid black; background:black; color:gold; padding:5px;margin:5px;">
+        <p>Parent {{ comment.id }}</p>
+        <p>{{ comment.posted|date('d-m-y H:i')  }}</p>
+        <p><i>{{ comment.user.getLogin }} написал:</i></p>
+        <p style="color:green">> {{ comment.comment }}</p>
+    </div> #}
+    </div>
+    <div id='postForm{{comment.id}}'></div>
+    {% endfor %}
+
+    <div class="comment-button" id="commentButton">
+        <h4>Нажмите чтоб написать комментарий</h4>
+    </div>
+    <div id="commentButtonPost">
+    </div>
+
+</div>

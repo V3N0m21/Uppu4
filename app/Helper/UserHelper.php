@@ -60,6 +60,15 @@ class UserHelper
         }
     }
 
+    public function getCurrentUserId()
+    {
+        $token = strval($this->requestCookies['token']);
+        if ($user = $this->em->getRepository('\Uppu4\Entity\User')->findOneByToken($token)){
+            return $user;
+        }
+        return null;
+    }
+
     public function authenticateUser($login, $password)
     {
         if ($user = $this->em->getRepository('\Uppu4\Entity\User')->findOneByLogin($login)) {
