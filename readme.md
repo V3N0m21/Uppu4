@@ -6,11 +6,9 @@ To deploy my filesharing app "Uppu4" on your local computer, you have to go thro
 
 2. In your bash go to the root directory of the project and run "composer install".
 
-3. After all required libraries and dependencies are installed, type in the bash following commands:
+3. After all required libraries and dependencies are installed, type in the bash following command:
 
-* mysql -u username -p -h localhost your-database-name < files.sql;
-* mysql -u username -p -h localhost your-database-name < users.sql;
-* mysql -u username -p -h localhost your-database-name < comments.sql;
+* mysql -h hostname -u user --password=password Uppu4 < Uppu4.sql
 
 to set up required tables in your database.
 
