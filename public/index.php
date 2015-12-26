@@ -24,6 +24,15 @@ $app->view->appendData(array(
     'userHelper' => $app->userHelper
 ));
 
+function checkAuthorization()
+{
+    $app = \Slim\Slim::getInstance();
+    if ($app->userHelper->checkAuthorization() != true) {
+        $app->response->cookies->set('urlRedirect', $app->request->getResourceUri(), '1 day');
+        $app->redirect('/login');
+    }
+}
+
 $app->map('/', function () use ($app) {
     $page = 'index';
     $message = '';
@@ -74,10 +83,15 @@ $app->map('/login/', function() use($app) {
         $login = $app->request->params('login');
         $password = $app->request->params('password');
         $user = $app->userHelper->authenticateUser($login, $password);
-
+        $redirect = $app->request->cookies('urlRedirect');
         if($user){
+            if ($redirect !== '') {
+                $app->response->cookies->set('urlRedirect', '');
+                $app->redirect("$redirect");
+            } else {
            $id = $user->getId();
            $app->redirect("/users/$id/");
+            }
         } else {
             $error = "Неправильный логин или пароль";
         }
@@ -92,7 +106,7 @@ $app->get('/logout', function () use ($app) {
     $app->redirect('/');
 });
 
-$app->get('/users/', function() use($app) {
+$app->get('/users/', 'checkAuthorization', function() use($app) {
    $page = 'users';
     $users = $app->em->getRepository('Uppu4\Entity\User')->findBy([], ['created' => 'DESC']);
     $filesCount = $app->em->createQuery('SELECT IDENTITY(u.uploadedBy), count(u.uploadedBy) FROM Uppu4\Entity\File u GROUP BY u.uploadedBy');
@@ -116,7 +130,7 @@ $app->delete('/users/:id/', function ($id) use ($app) {
     $app->redirect('/users');
 });
 
-$app->get('/list', function () use ($app) {
+$app->get('/list', 'checkAuthorization', function () use ($app) {
     $page = 'list';
     $files = $app->em->getRepository('Uppu4\Entity\File')->findBy([], ['uploaded' => 'DESC'], 50, 0);
     $app->render('list.html', array('files' => $files, 'page' => $page));
