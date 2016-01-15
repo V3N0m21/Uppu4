@@ -6,7 +6,7 @@ use Uppu4\Entity\Comment;
 class CommentHelper
 {
     private $em;
-    public $comment;
+    private $comment;
 
     function __construct(\Doctrine\ORM\EntityManager $em) {
         $this->em = $em;
@@ -19,9 +19,15 @@ class CommentHelper
         $this->comment->setParent($parent);
         $this->comment->setFileId($file);
         $this->comment->setPosted();
+        return $this->comment;
 }
-    public function commentSave() {
-        $this->em->persist($this->comment);
+    public function commentSave(Comment $comment) {
+        $this->em->persist($comment);
         $this->em->flush();
+    }
+
+    public function getAllComments($fileId) {
+        return $this->em->getRepository('Uppu4\Entity\Comment')
+                ->findBy(array('fileId' => $fileId), array('path' => 'ASC'));
     }
 }

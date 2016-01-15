@@ -3,6 +3,7 @@ namespace Uppu4\Helper;
 
 use Uppu4\Entity\File;
 
+
 class FileHelper
 {
 
@@ -18,17 +19,18 @@ class FileHelper
 
     public function fileValidate($data) {
         if (($data['size'] >= $this->maxSize) || ($data['size'] == 0)) {
-            $this->errors[] = 'Файл должен быть до 10мб.';
+            $size = FormatHelper::formatSize($this->maxSize);
+            $this->errors[] = "Файл должен быть до $size.";
         }
     }
 
-    public function fileSave($data, \Uppu4\Entity\User $user) {
+    public function fileSave($data, \Uppu4\Entity\User $user, $comment) {
         $fileResource = new File;
         $fileResource->setName($data['name']);
         $fileResource->setSize($data['size']);
         $finfo = new \finfo(FILEINFO_MIME_TYPE);
         $fileResource->setExtension($finfo->file($data['tmp_name']));
-        $fileResource->setComment($_POST['comment']);
+        $fileResource->setComment($comment);
         $mediainfo = \Uppu4\Entity\MediaInfo::getMediaInfo($data['tmp_name']);
         $fileResource->setMediainfo($mediainfo);
         $fileResource->setUploaded();
@@ -37,12 +39,12 @@ class FileHelper
         $this->em->flush();
         $id = $fileResource->getId();
         $tmpFile = $data['tmp_name'];
-        $newFile = \Uppu4\Helper\FormatHelper::formatUploadLink($id, $data['name']);
+        $newFile = FormatHelper::formatUploadLink($id, $data['name']);
         move_uploaded_file($tmpFile, $newFile);
 
         if (in_array($fileResource->getExtension(), $this->pictures)) {
-            $path = \Uppu4\Helper\FormatHelper::formatUploadResizeLink($id, $data['name']);
-            $resize = new \Uppu4\Helper\Resize;
+            $path = FormatHelper::formatUploadResizeLink($id, $data['name']);
+            $resize = new Resize;
             $resize->resizeFile($newFile, $path);
         }
         return $fileResource;
@@ -50,9 +52,9 @@ class FileHelper
 
     public function fileDelete($id) {
         $file = $this->em->getRepository('Uppu4\Entity\File')->findOneById($id);
-        $filePath = \Uppu4\Helper\FormatHelper::formatUploadLink($file->getId(), $file->getName());
+        $filePath = FormatHelper::formatUploadLink($file->getId(), $file->getName());
         if (in_array($file->getExtension(), $this->pictures)) {
-            $fileResizePath = \Uppu4\Helper\FormatHelper::formatUploadResizeLink($file->getId(), $file->getName());
+            $fileResizePath = FormatHelper::formatUploadResizeLink($file->getId(), $file->getName());
             unlink($fileResizePath);
         }
         unlink($filePath);

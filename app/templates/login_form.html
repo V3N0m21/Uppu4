@@ -7,7 +7,7 @@
     {% endif %}
     <p>{{ path }}</p>
 
-    <form action="/login" method="post">
+    <form action="/login?from={{redirect}}" method="post">
 
         <label>Логин или e-mail
             <input type="text" class="form-control" id="login" name="login" placeholder="Введите имя" required>

@@ -6,7 +6,8 @@ use Doctrine\ORM\Mapping;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 
-$cache = getCache();
+
+$cache = bootstrapGetCache();
 $cachedAnnotationReader = getAnnotationReader($cache);
 $evm = doctrineInit($cachedAnnotationReader);
 $config = createDoctrineConfig($cache, $cachedAnnotationReader);
@@ -29,12 +30,12 @@ function doctrineInit($cachedAnnotationReader)
 {
 
     $evm = new Doctrine\Common\EventManager();
-    addTreeExtension($evm, $cachedAnnotationReader);
+    bootstrapAddTreeExtension($evm, $cachedAnnotationReader);
     Type::addType('mediainfotype', 'Uppu4\Type\MediaInfoType');
     return $evm;
 }
 
-function getCache()
+function bootstrapGetCache()
 {
     if (extension_loaded('apc')) {
         $cache = new \Doctrine\Common\Cache\ApcCache();
@@ -98,7 +99,7 @@ function createDoctrineConfig($cache, $cachedAnnotationReader)
     return $config;
 }
 
-function addTreeExtension($evm, $cachedAnnotationReader)
+function bootstrapAddTreeExtension($evm, $cachedAnnotationReader)
 {
     $treeListener = new Gedmo\Tree\TreeListener;
     $treeListener->setAnnotationReader($cachedAnnotationReader);

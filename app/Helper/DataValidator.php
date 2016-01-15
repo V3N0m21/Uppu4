@@ -3,18 +3,20 @@ namespace Uppu4\Helper;
 
 class DataValidator
 {
-    public $error;
+    private $error;
 
     public function validateUserData($data)
     {
         $this->checkLogin($data['login']);
         $this->checkPassword($data['password'], $data['confirmation']);
         $this->checkEmail($data['email']);
+        return $this->error;
     }
 
     public function validateComment(\Uppu4\Entity\Comment $comment)
     {
         $this->checkComment($comment->getComment());
+        return $this->error;
     }
 
     public function hasErrors()
@@ -27,7 +29,7 @@ class DataValidator
         if ($this->notEmpty($comment)) {
             return true;
         }
-        return $this->error['comment'] = "Comment should not be empty";
+        $this->error['comment'] = "Комментарий не должен быть пустым";
     }
 
     private function checkLogin($login)
@@ -35,7 +37,7 @@ class DataValidator
         if ($this->notEmpty($login)) {
             return true;
         }
-        return $this->error['login'] = "Логин должен быть заполнен ";
+        $this->error['login'] = "Логин должен быть заполнен ";
     }
 
     private function checkEmail($email)
@@ -44,10 +46,11 @@ class DataValidator
             if ($this->isEmail($email)) {
                 return true;
             } else {
-                return $this->error['email'] = 'Email введен некоректно';
+                $this->error['email'] = 'Email введен некоректно';
+                return;
             }
         }
-        return $this->error['email'] = "Email должен быть заполнен.";
+        $this->error['email'] = "Email должен быть заполнен.";
     }
 
     private function checkPassword($password, $confirmation)

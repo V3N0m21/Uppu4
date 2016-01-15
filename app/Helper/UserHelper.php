@@ -9,7 +9,7 @@ class UserHelper
     private $responseCookies;
     private $requestCookies;
 
-    public function __construct($em, $requestCookies, $responseCookies)
+    public function __construct(\Doctrine\ORM\EntityManager $em, $requestCookies, $responseCookies)
     {
         $this->em = $em;
         $this->responseCookies = $responseCookies;

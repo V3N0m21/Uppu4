@@ -28,8 +28,8 @@ function checkAuthorization()
 {
     $app = \Slim\Slim::getInstance();
     if ($app->userHelper->checkAuthorization() != true) {
-        $app->response->cookies->set('urlRedirect', $app->request->getResourceUri(), '1 day');
-        $app->redirect('/login');
+        $route = $app->request->getResourceUri();
+        $app->redirect("/login?from=$route");
     }
 }
 
@@ -37,12 +37,12 @@ $app->map('/', function () use ($app) {
     $page = 'index';
     $message = '';
     if ($app->request->isPost()) {
-        if (file_exists($_FILES['load']['tmp_name']) && UPLOAD_ERR_OK == 0) {
+        if (file_exists($_FILES['load']['tmp_name']) && $_FILES['load']['error'] == 0) {
             $user = $app->userHelper->getUser();
             $fileHelper = new FileHelper($app->em);
             $fileHelper->fileValidate($_FILES['load']);
             if (empty($fileHelper->errors)) {
-                $file = $fileHelper->fileSave($_FILES['load'], $user);
+                $file = $fileHelper->fileSave($_FILES['load'], $user, $app->request->post('comment'));
                 $id = $file->getId();
                 $app->redirect("/view/$id");
             } else {
@@ -61,14 +61,13 @@ $app->map('/register/', function () use ($app) {
 
     if ($app->request->isPost()) {
         $validation = new \Uppu4\Helper\DataValidator();
-        $validation->validateUserData($app->request->post());
-        if (empty($validation->error)) {
+        $errors = $validation->validateUserData($app->request->post());
+        if (empty($errors)) {
         $user = $app->userHelper->getUser();
         $user = $app->userHelper->saveUser($user, $app->request->post());
         $id = $user->getId();
         $app->redirect("/users/$id");
         } else {
-            $errors = $validation->error;
             $data = $app->request->post();
         }
     }
@@ -79,14 +78,14 @@ $app->map('/register/', function () use ($app) {
 $app->map('/login/', function() use($app) {
     $page = 'login';
     $error = '';
+    $redirect = $app->request->get('from');
     if ($app->request->isPost()) {
         $login = $app->request->params('login');
         $password = $app->request->params('password');
         $user = $app->userHelper->authenticateUser($login, $password);
-        $redirect = $app->request->cookies('urlRedirect');
+
         if($user){
             if ($redirect !== '') {
-                $app->response->cookies->set('urlRedirect', '');
                 $app->redirect("$redirect");
             } else {
            $id = $user->getId();
@@ -97,7 +96,7 @@ $app->map('/login/', function() use($app) {
         }
     }
 
-    $app->render('login_form.html', array('errors' => $error, 'page' => $page));
+    $app->render('login_form.html', array('errors' => $error, 'page' => $page, 'redirect' => $redirect));
 
 })->via('GET', 'POST');
 
@@ -141,7 +140,7 @@ $app->get('/view/:id/', function ($id) use ($app) {
     if (!$file) {
         $app->notFound();
     }
-    $user = $app->em->getRepository('Uppu4\Entity\User')->findOneById($file->getUploadedBy());
+    $user = $file->getUploadedBy();
     $comments = $app->em->getRepository('Uppu4\Entity\Comment')->findBy(array('fileId' => $id), array('path' => 'ASC'));
     $app->render('view.html', array('file' => $file, 'user' => $user, 'comments' => $comments));
 
@@ -160,13 +159,12 @@ $app->map('/ajaxComments/:id', function ($id) use ($app) {
         $user = $app->em->find('Uppu4\Entity\User', $app->request->params('userId'));
         $validation = new \Uppu4\Helper\DataValidator;
         $commentHelper = new CommentHelper($app->em);
-        $commentHelper->createComment($app->request->params('comment'), $parent, $file, $user);
-        $comment = $commentHelper->comment;
-        $validation->validateComment($comment);
-        if (empty($validation->errors)) {
-            $commentHelper->commentSave();
+        $comment = $commentHelper->createComment($app->request->params('comment'), $parent, $file, $user);
+        $errors = $validation->validateComment($comment);
+        if (empty($errors)) {
+            $commentHelper->commentSave($comment);
         };
-        $comments = $app->em->getRepository('Uppu4\Entity\Comment')->findBy(array('fileId' => $id), array('path' => 'ASC'));
+        $comments = $commentHelper->getAllComments($file->getId());
         $app->render('comments.html', array('comments' => $comments));
     }
 })->via('GET', 'POST');

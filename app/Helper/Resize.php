@@ -120,7 +120,7 @@ class Resize
                 if (imagetypes() & IMG_JPG) {
                     imagejpeg($this->imageResized, $savePath, $imageQuality);
                 } else {
-                    throw new Exception("File '$savePath' not created", 1);
+                    throw new Exception("File '$savePath' could not be created", 1);
                 }
                 break;
 
