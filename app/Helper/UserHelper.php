@@ -87,7 +87,7 @@ class UserHelper
     public function checkAuthorization()
     {
         if ($this->requestCookies['token'] == '' || $this->requestCookies['hash'] == '') {
-            return null;
+            return false;
         } else {
             $token = strval($this->requestCookies['token']);
             $hash = strval($this->requestCookies['hash']);
@@ -99,7 +99,7 @@ class UserHelper
 
     public function logout()
     {
-        $this->responseCookies->set('token', '');
-        $this->responseCookies->set('hash', '');
+        $this->responseCookies->remove('token');
+        $this->responseCookies->remove('hash');
     }
 }
