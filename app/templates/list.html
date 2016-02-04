@@ -10,7 +10,7 @@
             <p>Загрузил <strong>{{ file.getUploadedBy.getLogin }}</strong></p>
             <form action="/view/{{file.id}}" method="post">
                 <input type="hidden" name="_METHOD" value="DELETE"/>
-                <input type="submit" value="Remove file"/>
+                <input type="submit" class="btn btn-danger btn-xs" value="Remove file"/>
             </form>
         </li>
 

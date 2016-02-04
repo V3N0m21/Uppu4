@@ -10,18 +10,25 @@
     <script src="{{ app.request.getRootUri() }}/js/jquery-1.11.3.min.js"></script>
 </head>
 <body>
-<nav class="navbar navbar-inverse container-fluid">
+<nav class="navbar navbar-inverse">
+    <div class="container-fluid">
     <a class="navbar-brand" href="/">Uppu4</a>
     <ul class="list-inline nav navbar-nav">
         <li class="{% if page == 'index' %}active{% endif %}"><a href="/">Главная</a></li>
         <li class="{% if page == 'list' %}active{% endif %}"><a href="/list">Список файлов</a></li>
         <li class="{% if page == 'users' %}active{% endif %}"><a href="/users">Пользователи</a></li>
+
+    </ul>
+
+    <ul class="nav navbar-nav navbar-right">
         {% if userHelper.checkAuthorization() != true %}
-        <li class="{% if page == 'login' %}active{% endif %}"><a href="/login">Войти</a></li>
+        <li class="{% if page == 'login' %}hidden{% endif %}"><a href="/login"><span class="glyphicon glyphicon-log-in"></span> Войти</a></li>
+        <li> <a href="/register"><span class="glyphicon glyphicon-user"></span> Регистрация</a></li>
         {% else %}
-        <li class="{% if page == 'login' %}active{% endif %}"><a href="/logout">Выйти</a></li>
+        <li class="{% if page == 'login' %}active{% endif %}"><a href="/logout"><span class="glyphicon glyphicon-log-out"></span> Выйти</a></li>
         {% endif %}
     </ul>
+    </div>
 </nav>
 {% block content %}
 
