@@ -167,6 +167,10 @@ $app->map('/ajaxComments/:id', function ($id) use ($app) {
         $comments = $commentHelper->getAllComments($file->getId());
         $app->render('comments.html', array('comments' => $comments));
     }
+    $file = $app->em->find('Uppu4\Entity\File', $id);
+    $commentHelper = new CommentHelper($app->em);
+    $comments = $commentHelper->getAllComments($file->getId());
+    $app->render('comments.html', array('comments' => $comments));
 })->via('GET', 'POST');
 
 $app->get('/download/:id/:name', function ($id, $name) use ($app) {

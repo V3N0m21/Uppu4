@@ -9,11 +9,13 @@
             <p>Логин: <a href="/users/{{user.id}}/">{{ user.login }}</a></p>
             <p>e-mail: {{user.email}}</p>
             <p>Зарегистрирован: {{ user.created|date('d.m.Y h:i') }}</p>
-            <p>Файлов загружено: {% if filesCount[user.id] != '' %}{{ filesCount[user.id] }}{% else %}{{ 0 }}{% endif %}</p>
+            <p>Файлов загружено: <span class="badge">{% if filesCount[user.id] != '' %}{{ filesCount[user.id] }}{% else %}{{ 0 }}{% endif %}</span></p>
+            {% if userHelper.checkAdminAuthorization == true %}
             <form action="/users/{{user.id}}" method="post">
                 <input type="hidden" name="_METHOD" value="DELETE"/>
-                <input type="submit" value="Remove user"/>
+                <input type="submit" class="btn btn-danger btn-xs" value="Remove user"/>
             </form>
+            {% endif %}
         </li>
         {% endif %}
         {% endfor %}

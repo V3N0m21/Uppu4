@@ -8,8 +8,9 @@
   {% else %}
   <p> {{ file.name }} </p>
 
-  <p><a href="{{ helper.formatDownloadLink(file.id, file.name)}}">Скачать файл</a></p>
-  <p><strong>Загружен:</strong> {{ file.uploaded|date('d-m-y H:i') }}</p>
+    <p><a href="{{ helper.formatDownloadLink(file.id, file.name)}}"
+          class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-download"></span> Скачать файл</a></p>
+    <p><strong>Загружен:</strong> {{ file.uploaded|date('d-m-y H:i') }}</p>
   <p><strong>Загрузил:</strong> {{ user.login }}</p>
   <p><strong>Размер файла:</strong> {{ helper.formatSize(file.size) }}</p>
   <p>{{ file.extension }}</p>
@@ -27,7 +28,7 @@
 
     <h3>Комментарии</h3>
 
-    <button onclick="refreshComments()">Refresh</button>
+    <button class="btn btn-default" onclick="refreshComments()">Refresh</button>
     <div class="modal loading">
     </div>
 
@@ -75,6 +76,7 @@
 </div>
 
 <script type="text/x-template" id="commentTemplate">
+
 <div class="commentReply">
 <h4><b> Ответить: </b></h4>
 <form  id="commentForm" name="commentForm">
@@ -89,56 +91,9 @@
 </div>
 </script>
 <script>
-var template = $('#commentTemplate').html();
-$(document).ready(function(){
-    $("#commentButton").click(function(){
-        $("#commentButton").remove();
-        $(".commentReply").remove();
-        $(template).insertAfter("#commentButtonPost");
-    })
-});
-function refreshComments(){
-    $.ajax("/ajaxComments/{{file.id}}",
-    {
-        type: "POST",
-        success : function(text)
-        {
-            $( "#comments" ).empty().append(text);
-        },
-    })
-}
-function appendPostForm(id, user) {
-    $(".commentReply").remove();
-    $(template).insertAfter("#comment"+id);
-    $("#parentComment").val(id);
-    $("#commentBody").val(user+ ', ');
-    
-};
+    var fileId = "{{ file.id }}";
 
-function postComment() {
-    var fd = new FormData(document.forms.commentForm);
-    $.ajax("/ajaxComments/{{file.id}}",
-    {
-        type: "POST",
-        processData: false,
-        contentType: false,
-        data: fd,
-        success : function(text)
-        {
-            $( "#comments" ).empty().append(text);
-        },
-        error: function(xhr, textStatus, errorThrown) {
-            alert(errorThrown + ' - ' + textStatus);
-        },
-
-    });
-};
-var modal = $(".modal");
-
-$(document).on({
-   ajaxStart: function() { modal.css({"display": "block"});    },
-   ajaxStop: function() { modal.css({"display": "none"}); }
-});
 </script>
+<script src="{{ app.request.getRootUri() }}/js/comments.js"></script>
 
 {% endblock %}
