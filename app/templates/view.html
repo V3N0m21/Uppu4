@@ -76,6 +76,7 @@
 </div>
 
 <script type="text/x-template" id="commentTemplate">
+
 <div class="commentReply">
 <h4><b> Ответить: </b></h4>
 <form  id="commentForm" name="commentForm">
@@ -90,56 +91,8 @@
 </div>
 </script>
 <script>
-var template = $('#commentTemplate').html();
-$(document).ready(function(){
-    $("#commentButton").click(function(){
-        $("#commentButton").remove();
-        $(".commentReply").remove();
-        $(template).insertAfter("#commentButtonPost");
-    })
-});
-function refreshComments(){
-    $.ajax("/ajaxComments/{{file.id}}",
-    {
-        type: "POST",
-        success : function(text)
-        {
-            $( "#comments" ).empty().append(text);
-        },
-    })
-}
-function appendPostForm(id, user) {
-    $(".commentReply").remove();
-    $(template).insertAfter("#comment"+id);
-    $("#parentComment").val(id);
-    $("#commentBody").val(user+ ', ');
-    
-};
-
-function postComment() {
-    var fd = new FormData(document.forms.commentForm);
-    $.ajax("/ajaxComments/{{file.id}}",
-    {
-        type: "POST",
-        processData: false,
-        contentType: false,
-        data: fd,
-        success : function(text)
-        {
-            $( "#comments" ).empty().append(text);
-        },
-        error: function(xhr, textStatus, errorThrown) {
-            alert(errorThrown + ' - ' + textStatus);
-        },
-
-    });
-};
-modal = $(".modal");
-
-$(document).on({
-   ajaxStart: function() { modal.css({"display": "block"}); },
-   ajaxStop: function() { modal.css({"display": "none"}); }
-});
+    var fileId = "{{ file.id }}";
 </script>
+<script src="{{ app.request.getRootUri() }}/js/comments.js"></script>
 
 {% endblock %}
