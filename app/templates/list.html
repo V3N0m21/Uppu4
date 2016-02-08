@@ -8,10 +8,12 @@
             <p><strong>Комментарий пользователя:</strong>   {{ file.comment }}</p>
             <p><strong>Размер файла:</strong>  {{ helper.formatSize(file.size) }}</p>
             <p>Загрузил <strong>{{ file.getUploadedBy.getLogin }}</strong></p>
+            {% if userHelper.checkAdminAuthorization == true %}
             <form action="/view/{{file.id}}" method="post">
                 <input type="hidden" name="_METHOD" value="DELETE"/>
                 <input type="submit" class="btn btn-danger btn-xs" value="Remove file"/>
             </form>
+            {% endif %}
         </li>
 
         {% else %}

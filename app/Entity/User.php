@@ -31,6 +31,9 @@ class User
     /** @ORM\Column(type="string") */
     protected $hash;
 
+    /** @ORM\Column(type="boolean") */
+    protected $admin;
+
     public function getId()
     {
         return $this->id;
@@ -100,5 +103,15 @@ class User
     public function __toString()
     {
         return (string)$this->getId();
+    }
+
+    public function setAdmin($admin)
+    {
+        $this->admin = $admin;
+    }
+
+    public function getAdmin()
+    {
+        return $this->admin;
     }
 }

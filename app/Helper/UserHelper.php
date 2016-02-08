@@ -36,6 +36,7 @@ class UserHelper
         $userModel->setEmail($postParams['email']);
         $hash = HashGenerator::generateHash($postParams['password'], $userModel->getSalt());
         $userModel->setHash($hash);
+        !empty($postParams['admin']) ? $userModel->setAdmin(1) : $userModel->setAdmin(0);
         $userModel->setCreatedNow();
         $this->em->persist($userModel);
         $this->em->flush();
@@ -94,6 +95,18 @@ class UserHelper
             $user = $this->em->getRepository('Uppu4\Entity\User')->findOneByToken($token);
             if ($user->getHash() != $hash) return null;
             return true;
+        }
+    }
+
+    public function checkAdminAuthorization() {
+        if ($this->checkAuthorization()) {
+            $token = strval($this->requestCookies['token']);
+            $user = $this->em->getRepository('Uppu4\Entity\User')->findOneByToken($token);
+            if ($user->getAdmin()) {
+                return true;
+            }
+        } else {
+        return false;
         }
     }
 
