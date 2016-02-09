@@ -29,7 +29,7 @@ function checkAuthorization()
     $app = \Slim\Slim::getInstance();
     if ($app->userHelper->checkAuthorization() != true) {
         $route = $app->request->getResourceUri();
-        $app->redirect("/login?from=$route");
+        $app->redirect("/login?from=$route&notify=authorization_required");
     }
 }
 
@@ -61,7 +61,8 @@ $app->map('/', function () use ($app) {
             $message = "Вы не выбрали файл";
         }
     }
-    $app->render('file_load.html', array('page' => $page, 'message' => $message));
+    $notification = $app->request->get('notify');
+    $app->render('file_load.html', array('notification' => $notification, 'page' => $page, 'message' => $message));
 })->via('GET', 'POST');
 
 $app->map('/register/', function () use ($app) {
@@ -104,14 +105,14 @@ $app->map('/login/', function() use($app) {
             $error = "Неправильный логин или пароль";
         }
     }
-
-    $app->render('login_form.html', array('errors' => $error, 'page' => $page, 'redirect' => $redirect));
+    $notification = $app->request->get('notify');
+    $app->render('login_form.html', array('notification' => $notification, 'errors' => $error, 'page' => $page, 'redirect' => $redirect));
 
 })->via('GET', 'POST');
 
 $app->get('/logout', function () use ($app) {
     $app->userHelper->logout();
-    $app->redirect('/');
+    $app->redirect('/?notify=logged_out');
 });
 
 $app->get('/users/', 'checkAuthorization', function() use($app) {

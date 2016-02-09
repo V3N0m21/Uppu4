@@ -128,7 +128,7 @@ class Resize
                 if (imagetypes() & IMG_GIF) {
                     imagegif($this->imageResized, $savePath);
                 } else {
-                    throw new Exception("File '$savePath' not created", 1);
+                    throw new Exception("File '$savePath' could not be created", 1);
                 }
                 break;
 
@@ -143,12 +143,12 @@ class Resize
                 if (imagetypes() & IMG_PNG) {
                     imagepng($this->imageResized, $savePath, $invertScaleQuality);
                 } else {
-                    throw new Exception("File '$savePath' not created", 1);
+                    throw new Exception("File '$savePath' could not be created", 1);
                 }
                 break;
 
             default:
-                throw new Exception("File '$savePath' not an image", 1);
+                throw new Exception("File '$savePath' could not be created", 1);
                 break;
         }
 

@@ -53,12 +53,13 @@ class FileHelper
     public function fileDelete($id) {
         $file = $this->em->getRepository('Uppu4\Entity\File')->findOneById($id);
         $filePath = FormatHelper::formatUploadLink($file->getId(), $file->getName());
+        $this->em->remove($file);
+        $this->em->flush();
         if (in_array($file->getExtension(), $this->pictures)) {
             $fileResizePath = FormatHelper::formatUploadResizeLink($file->getId(), $file->getName());
             unlink($fileResizePath);
         }
         unlink($filePath);
-        $this->em->remove($file);
-        $this->em->flush();
+
     }
 }
