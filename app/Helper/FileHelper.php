@@ -35,6 +35,8 @@ class FileHelper
         $fileResource->setMediainfo($mediainfo);
         $fileResource->setUploaded();
         $fileResource->setUploadedBy($user);
+        $this->em->getConnection()->beginTransaction();
+        try {
         $this->em->persist($fileResource);
         $this->em->flush();
         $id = $fileResource->getId();
@@ -47,7 +49,12 @@ class FileHelper
             $resize = new Resize;
             $resize->resizeFile($newFile, $path);
         }
+        $this->em->getConnection()->commit();
         return $fileResource;
+        } catch (Exception $e) {
+            $this->em->getConnection()->rollback();
+            throw $e;
+        }
     }
 
     public function fileDelete($id) {
