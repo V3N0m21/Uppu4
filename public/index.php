@@ -33,6 +33,15 @@ function checkAuthorization()
     }
 }
 
+function checkAdminAuthorization()
+{
+    $app = \Slim\Slim::getInstance();
+    if ($app->userHelper->checkAdminAuthorization() != true) {
+
+        $app->halt(403, "You have to have admin rights.");
+    }
+}
+
 $app->map('/', function () use ($app) {
     $page = 'index';
     $message = '';
@@ -120,11 +129,14 @@ $app->get('/users/', 'checkAuthorization', function() use($app) {
 $app->get('/users/:id/', function ($id) use ($app) {
     $page = 'users';
     $user = $app->em->getRepository('Uppu4\Entity\User')->findOneById($id);
+    if (!$user) {
+        $app->notFound();
+    }
     $files = $app->em->getRepository('Uppu4\Entity\File')->findByUploadedBy($id);
     $app->render('user.html', array('user' => $user, 'files' => $files, 'page' => $page));
 });
 
-$app->delete('/users/:id/', function ($id) use ($app) {
+$app->delete('/users/:id/', 'checkAdminAuthorization', function ($id) use ($app) {
     $app->userHelper->userDelete($id);
     $app->redirect('/users');
 });
@@ -146,7 +158,7 @@ $app->get('/view/:id/', function ($id) use ($app) {
 
 });
 
-$app->delete('/view/:id/', function ($id) use ($app) {
+$app->delete('/view/:id/', 'checkAdminAuthorization', function ($id) use ($app) {
     $fileHelper = new \Uppu4\Helper\FileHelper($app->em);
     $fileHelper->fileDelete($id);
     $app->redirect('/list');
@@ -167,10 +179,12 @@ $app->map('/ajaxComments/:id', function ($id) use ($app) {
         $comments = $commentHelper->getAllComments($file->getId());
         $app->render('comments.html', array('comments' => $comments));
     }
+    if ($app->request->isGet()) {
     $file = $app->em->find('Uppu4\Entity\File', $id);
     $commentHelper = new CommentHelper($app->em);
     $comments = $commentHelper->getAllComments($file->getId());
     $app->render('comments.html', array('comments' => $comments));
+    }
 })->via('GET', 'POST');
 
 $app->get('/download/:id/:name', function ($id, $name) use ($app) {
