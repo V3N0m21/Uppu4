@@ -36,13 +36,12 @@ class FileHelper
         $fileResource->setUploaded();
         $fileResource->setUploadedBy($user);
         $this->em->getConnection()->beginTransaction();
-        try {
         $this->em->persist($fileResource);
         $this->em->flush();
         $id = $fileResource->getId();
         $tmpFile = $data['tmp_name'];
         $newFile = FormatHelper::formatUploadLink($id, $data['name']);
-        move_uploaded_file($tmpFile, $newFile);
+        if (move_uploaded_file($tmpFile, $newFile)) {
 
         if (in_array($fileResource->getExtension(), $this->pictures)) {
             $path = FormatHelper::formatUploadResizeLink($id, $data['name']);
@@ -51,10 +50,10 @@ class FileHelper
         }
         $this->em->getConnection()->commit();
         return $fileResource;
-        } catch (Exception $e) {
-            $this->em->getConnection()->rollback();
-            throw $e;
+        } else {
+         $this->em->getConnection()->rollback();
         }
+
     }
 
     public function fileDelete($id) {
