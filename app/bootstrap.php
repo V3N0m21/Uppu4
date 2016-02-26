@@ -40,7 +40,7 @@ function bootstrapGetCache()
     if (extension_loaded('apc')) {
         $cache = new \Doctrine\Common\Cache\ApcCache();
     } else {
-        $cache = new \Doctrine\Common\Cache\PhpFileCache();
+        $cache = new \Doctrine\Common\Cache\PhpFileCache(dirname(__DIR__). "/public/filecache/");
     }
     return $cache;
 }

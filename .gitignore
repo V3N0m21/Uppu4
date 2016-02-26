@@ -22,10 +22,8 @@
 composer.phar
 
 public/upload/
-public/upload/resize/
 vendor/
 .idea/
-app/config.ini
 # Logs and databases #
 ######################
 *.log

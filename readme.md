@@ -12,6 +12,8 @@ To deploy my filesharing app "Uppu4" on your local computer, you have to go thro
 
 to set up required tables in your database.
 
+4. Edit app/config.ini by inserting your credentials to access database.
+
 Server requirements:
 
 Your apache2 server has to allow usage of .htaccess files and also it has to have x-sendfile module to be installed.
